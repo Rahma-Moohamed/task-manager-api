@@ -9,7 +9,11 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
 
     def get_queryset(self):
-        return Task.objects.filter(owner=self.request.user)
+        queryset = Task.objects.filter(owner=self.request.user)
+        is_done = self.request.query_params.get('is_done')
+        if is_done is not None:
+         queryset = queryset.filter(is_done=is_done.lower() == 'true')
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
